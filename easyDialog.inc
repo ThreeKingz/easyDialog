@@ -25,6 +25,10 @@
 #define Dialog:%0(%1) \
 	forward dialog_%0(%1); public dialog_%0(%1)
 
+#define DialogReceived:%0(%1) \
+	forward dialogr_%0(%1); public dialogr_%0(%1)
+
+
 #define Dialog_Show(%0,%1, \
 	Dialog_Open(%0, #%1,
 
@@ -110,9 +114,15 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	static
 		s_Public = cellmax;
 
+	new 
+		string2[54];
+
+	strcat(string2, "dialogr_");
+	strcat(string2, s_DialogName[playerid]);
+
 	if (s_Public == cellmax)
 	{
-		s_Public = funcidx("OnDialogPerformed");
+		s_Public = funcidx(string2);
 	}
 
 	// Sanitize inputs.
@@ -130,10 +140,9 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 
 		strcat(string, "dialog_");
 		strcat(string, s_DialogName[playerid]);
-
 		Dialog_Close(playerid);
 
-		if ((s_Public == -1) || (CallLocalFunction("OnDialogPerformed", "dsdd", playerid, string[7], response, funcidx(string) != -1)))
+		if ((s_Public == -1) || (CallLocalFunction(string2, "ddd", playerid, response, funcidx(string) != -1)))
 		{
 	 		CallLocalFunction(string, "ddds", playerid, response, listitem, (!inputtext[0]) ? ("\1") : (inputtext));
 		}
